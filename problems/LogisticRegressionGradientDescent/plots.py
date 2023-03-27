@@ -17,6 +17,8 @@ SNS_STYLE = {
     'figure.facecolor' :'none',
 }
 DPI = 100
+ALPHA = 0.8
+ZORDER = 100
 
 
 def sigmoid(x):
@@ -24,7 +26,14 @@ def sigmoid(x):
 
 
 def plot_function(ax, x, f):
-    ax.plot(x, f, color=COLOR, linewidth=LINEWIDTH)
+    ax.plot(
+        x,
+        f,
+        color=COLOR,
+        linewidth=LINEWIDTH,
+        alpha=ALPHA,
+        zorder=ZORDER,
+    )
 
     ax.set_xlim(XLIM)
     ax.set_ylim(YLIM)
