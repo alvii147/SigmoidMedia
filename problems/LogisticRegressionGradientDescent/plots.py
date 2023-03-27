@@ -16,6 +16,7 @@ SNS_STYLE = {
     'axes.facecolor': '#DCDBEE',
     'figure.facecolor' :'none',
 }
+DPI = 50
 
 
 def sigmoid(x):
@@ -50,10 +51,10 @@ if __name__ == '__main__':
 
     fig, ax = plt.subplots(1)
     plot_function(ax, x, f)
-    plt.savefig(SCRIPT_PATH / 'sigmoid.png')
+    plt.savefig(SCRIPT_PATH / 'sigmoid.png', dpi=DPI)
 
     f = np.heaviside(x, 0.5)
 
     fig, ax = plt.subplots(1)
     plot_function(ax, x, f)
-    plt.savefig(SCRIPT_PATH / 'step.png')
+    plt.savefig(SCRIPT_PATH / 'step.png', dpi=DPI)
