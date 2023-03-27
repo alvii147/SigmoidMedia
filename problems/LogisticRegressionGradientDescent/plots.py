@@ -16,7 +16,7 @@ SNS_STYLE = {
     'axes.facecolor': '#DCDBEE',
     'figure.facecolor' :'none',
 }
-DPI = 50
+DPI = 100
 
 
 def sigmoid(x):
