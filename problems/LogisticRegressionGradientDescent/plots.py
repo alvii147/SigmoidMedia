@@ -9,8 +9,8 @@ XLIM = (-5, 5)
 YLIM = (-0.5, 1.5)
 YTICKS = np.arange(YLIM[0], YLIM[1] + 0.5, 0.5)
 RESOLUTION = 1000
-COLOR = 'salmon'
-LINEWIDTH = 4
+COLOR = '#0A193B'
+LINEWIDTH = 3
 SNS_STYLE = {
     'grid.color': '#AAB3C8',
     'axes.facecolor': '#DCDBEE',
