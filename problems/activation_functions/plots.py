@@ -25,6 +25,10 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
+def step(x):
+    return np.heaviside(x, 0.5)
+
+
 def plot_function(ax, x, f):
     ax.plot(
         x,
@@ -39,8 +43,8 @@ def plot_function(ax, x, f):
     ax.set_ylim(YLIM)
     ax.set_yticks(YTICKS)
 
-    ax.spines['left'].set_position('center')
-    ax.spines['bottom'].set_position('center')
+    ax.spines['left'].set_position('zero')
+    ax.spines['bottom'].set_position('zero')
 
     ax.spines['left'].set_color('black')
     ax.spines['bottom'].set_color('black')
@@ -62,7 +66,7 @@ if __name__ == '__main__':
     plot_function(ax, x, f)
     plt.savefig(SCRIPT_PATH / 'sigmoid.png', dpi=DPI)
 
-    f = np.heaviside(x, 0.5)
+    f = step(x)
 
     fig, ax = plt.subplots(1)
     plot_function(ax, x, f)
