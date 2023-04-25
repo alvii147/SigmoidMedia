@@ -1,14 +1,17 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
 
 SCRIPT_PATH = Path(__file__).parent
-XLIM = (-0.5, 4.5)
-YLIM = (-0.5, 4.5)
-XTICKS = np.arange(XLIM[0], XLIM[1] + 0.5, 0.5)
-YTICKS = np.arange(YLIM[0], YLIM[1] + 0.5, 0.5)
+XLIM = (4, 8)
+YLIM = (1.75, 4.75)
+XSTEP = 0.5
+YSTEP = 0.25
+XTICKS = np.arange(XLIM[0], XLIM[1] + XSTEP, XSTEP)
+YTICKS = np.arange(YLIM[0], YLIM[1] + YSTEP, YSTEP)
 CLASS_1_COLOR = '#4800FF'
 CLASS_2_COLOR = '#BF333C'
 NEW_POINT_COLOR = '#00A058'
@@ -19,7 +22,7 @@ CLASS_1_MARKER = 'X'
 CLASS_2_MARKER = 'o'
 NEW_POINT_MARKER = '^'
 MARKER_SIZE = 80
-NEIGHBOURS_RADIUS_SCALE = 1.2
+NEIGHBOURS_RADIUS_SCALE = 1.1
 NEIGHBOURS_LINEWIDTH = 3
 SNS_STYLE = {
     'grid.color': '#AAB3C8',
@@ -27,11 +30,30 @@ SNS_STYLE = {
     'figure.facecolor' :'none',
 }
 DPI = 100
+SEED = 69
 
 
-def plot_knn(ax, class_1, class_2, new_point, show_neighbours=True):
+def load_iris_data():
+    return pd.read_csv(SCRIPT_PATH / 'Iris.csv')
+
+
+def plot_knn(
+    ax,
+    class_1,
+    class_1_label,
+    class_2,
+    class_2_label,
+    x_label,
+    y_label,
+    new_point=None,
+    new_point_label=None,
+    k=None,
+    show_neighbours=True,
+):
     if show_neighbours:
-        neighbours = np.concatenate((class_1, [class_2[0], new_point]))
+        all_classes = np.vstack((class_1, class_2))
+        distances = np.linalg.norm(all_classes - new_point, axis=1)
+        neighbours = all_classes[np.argsort(distances)[:k]]
         neighbours_center = np.mean(neighbours, axis=0)
         neighbours_radius = np.amax(np.linalg.norm(neighbours - neighbours_center, axis=1)) * NEIGHBOURS_RADIUS_SCALE
 
@@ -39,8 +61,8 @@ def plot_knn(ax, class_1, class_2, new_point, show_neighbours=True):
     ax.set_ylim(YLIM)
     ax.set_xticks(XTICKS)
     ax.set_yticks(YTICKS)
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
 
     ax.scatter(
         class_1[:, 0],
@@ -49,7 +71,7 @@ def plot_knn(ax, class_1, class_2, new_point, show_neighbours=True):
         marker=CLASS_1_MARKER,
         s=MARKER_SIZE,
         alpha=ALPHA,
-        label='Class 1',
+        label=class_1_label,
     )
     ax.scatter(
         class_2[:, 0],
@@ -58,17 +80,18 @@ def plot_knn(ax, class_1, class_2, new_point, show_neighbours=True):
         marker=CLASS_2_MARKER,
         s=MARKER_SIZE,
         alpha=ALPHA,
-        label='Class 2',
+        label=class_2_label,
     )
-    ax.scatter(
-        new_point[0],
-        new_point[1],
-        color=NEW_POINT_COLOR,
-        marker=NEW_POINT_MARKER,
-        s=MARKER_SIZE,
-        alpha=ALPHA,
-        label='New Point',
-    )
+    if new_point is not None:
+        ax.scatter(
+            new_point[0],
+            new_point[1],
+            color=NEW_POINT_COLOR,
+            marker=NEW_POINT_MARKER,
+            s=MARKER_SIZE,
+            alpha=ALPHA,
+            label=new_point_label,
+        )
 
     if show_neighbours:
         ax.add_patch(
@@ -82,21 +105,77 @@ def plot_knn(ax, class_1, class_2, new_point, show_neighbours=True):
             )
         )
 
-    ax.legend(loc='upper left')
+    ax.legend()
 
 
 if __name__ == '__main__':
     sns.set_theme()
     sns.set_style('darkgrid', SNS_STYLE)
 
-    class_1 = np.array([(0.5, 1), (1, 1)])
-    class_2 = np.array([(2, 1.5), (3, 3.5)])
-    new_point = (1, 2)
+    iris = load_iris_data()
+    class_1_label = 'Iris-setosa'
+    class_2_label = 'Iris-virginica'
+    setosa = iris.loc[iris['Species'] == class_1_label]
+    virginica = iris.loc[iris['Species'] == class_2_label]
+    x_col = 'SepalLengthCm'
+    y_col = 'SepalWidthCm'
+
+    setosa_samples = setosa.sample(n=2, random_state=SEED)
+    virginica_samples = virginica.sample(n=2, random_state=SEED)
+
+    class_1 = setosa_samples[[x_col, y_col]].to_numpy(dtype=np.float64)
+    class_2 = virginica_samples[[x_col, y_col]].to_numpy(dtype=np.float64)
+    new_point = np.array([5.5, 3.2], dtype=np.float64)
+    x_label = 'Sepal Length (cm)'
+    y_label = 'Sepal Width (cm)'
 
     fig, ax = plt.subplots(1)
-    plot_knn(ax, class_1, class_2, new_point, show_neighbours=False)
+    plot_knn(
+        ax,
+        class_1=class_1,
+        class_1_label=class_1_label,
+        class_2=class_2,
+        class_2_label=class_2_label,
+        x_label=x_label,
+        y_label=y_label,
+        new_point=new_point,
+        new_point_label='New Point',
+        k=3,
+        show_neighbours=False,
+    )
     plt.savefig(SCRIPT_PATH / 'knn.png', dpi=DPI)
 
     fig, ax = plt.subplots(1)
-    plot_knn(ax, class_1, class_2, new_point, show_neighbours=True)
+    plot_knn(
+        ax,
+        class_1=class_1,
+        class_1_label=class_1_label,
+        class_2=class_2,
+        class_2_label=class_2_label,
+        x_label=x_label,
+        y_label=y_label,
+        new_point=new_point,
+        new_point_label='New Point',
+        k=3,
+        show_neighbours=True,
+    )
     plt.savefig(SCRIPT_PATH / 'knn_neighbours.png', dpi=DPI)
+
+    class_1 = setosa[[x_col, y_col]].to_numpy(dtype=np.float64)
+    class_2 = virginica[[x_col, y_col]].to_numpy(dtype=np.float64)
+
+    fig, ax = plt.subplots(1)
+    plot_knn(
+        ax,
+        class_1=class_1,
+        class_1_label=class_1_label,
+        class_2=class_2,
+        class_2_label=class_2_label,
+        x_label=x_label,
+        y_label=y_label,
+        new_point=new_point,
+        new_point_label='New Point',
+        k=8,
+        show_neighbours=False,
+    )
+    plt.savefig(SCRIPT_PATH / 'knn_all.png', dpi=DPI)
