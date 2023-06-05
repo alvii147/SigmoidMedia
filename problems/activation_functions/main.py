@@ -29,19 +29,31 @@ def step(x):
     return np.heaviside(x, 0.5)
 
 
-def plot_function(ax, x, f):
+def tanh(x):
+    return np.tanh(x)
+
+
+def relu(x):
+    return np.maximum(0, x)
+
+
+def leaky_relu(x, alpha):
+    return np.maximum(alpha * x, x)
+
+
+def plot_function(ax, x, f, **kwargs):
     ax.plot(
         x,
         f,
-        color=COLOR,
-        linewidth=LINEWIDTH,
-        alpha=ALPHA,
+        color=kwargs.get('color', COLOR),
+        linewidth=kwargs.get('linewidth', LINEWIDTH),
+        alpha=kwargs.get('alpha', ALPHA),
         zorder=ZORDER,
     )
 
-    ax.set_xlim(XLIM)
-    ax.set_ylim(YLIM)
-    ax.set_yticks(YTICKS)
+    ax.set_xlim(kwargs.get('xlim', XLIM))
+    ax.set_ylim(kwargs.get('ylim', YLIM))
+    ax.set_yticks(kwargs.get('yticks', YTICKS))
 
     ax.spines['left'].set_position('zero')
     ax.spines['bottom'].set_position('zero')
@@ -59,15 +71,36 @@ if __name__ == '__main__':
     sns.set_theme()
     sns.set_style('darkgrid', SNS_STYLE)
 
+    config = {
+        'sigmoid': {
+            'fn': sigmoid,
+            'kwargs': {},
+        },
+        'step': {
+            'fn': step,
+            'kwargs': {},
+        },
+        'tanh': {
+            'fn': tanh,
+            'kwargs': {
+                'ylim': (-1.5, 1.5),
+                'yticks': (-1.5, -1, -0.5, 0, 0.5, 1, 1.5),
+            },
+        },
+        'relu': {
+            'fn': relu,
+            'kwargs': {},
+        },
+        'leaky_relu': {
+            'fn': lambda x: leaky_relu(x, 0.1),
+            'kwargs': {},
+        },
+    }
+
     x = np.linspace(*XLIM, RESOLUTION)
-    f = sigmoid(x)
 
-    fig, ax = plt.subplots(1)
-    plot_function(ax, x, f)
-    plt.savefig(SCRIPT_PATH / 'sigmoid.png', dpi=DPI)
-
-    f = step(x)
-
-    fig, ax = plt.subplots(1)
-    plot_function(ax, x, f)
-    plt.savefig(SCRIPT_PATH / 'step.png', dpi=DPI)
+    for name, cfg in config.items():
+        f = cfg['fn'](x)
+        fig, ax = plt.subplots(1)
+        plot_function(ax, x, f, **cfg['kwargs'])
+        plt.savefig(SCRIPT_PATH / f'{name}.png', dpi=DPI)
