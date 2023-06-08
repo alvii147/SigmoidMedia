@@ -101,6 +101,6 @@ if __name__ == '__main__':
 
     for name, cfg in config.items():
         f = cfg['fn'](x)
-        fig, ax = plt.subplots(1)
+        fig, ax = plt.subplots()
         plot_function(ax, x, f, **cfg['kwargs'])
         plt.savefig(SCRIPT_PATH / f'{name}.png', dpi=DPI)
