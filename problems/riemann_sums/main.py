@@ -7,7 +7,7 @@ from pathlib import Path
 
 SCRIPT_PATH = Path(__file__).parent
 XLIM = (0, 2)
-YLIM = (-0.5, 16.5)
+YLIM = (0, 16.5)
 YTICKS = np.arange(YLIM[0], YLIM[1] + 0.5, 4)
 RESOLUTION = 1000
 FUNCCOLOR = '#0A193B'
