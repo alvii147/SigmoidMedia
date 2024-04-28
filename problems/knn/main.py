@@ -6,17 +6,18 @@ from pathlib import Path
 
 
 SCRIPT_PATH = Path(__file__).parent
+THEME = 'light'
 XLIM = (4, 8)
 YLIM = (1.75, 4.75)
 XSTEP = 0.5
 YSTEP = 0.25
 XTICKS = np.arange(XLIM[0], XLIM[1] + XSTEP, XSTEP)
 YTICKS = np.arange(YLIM[0], YLIM[1] + YSTEP, YSTEP)
-CLASS_1_COLOR = '#4800FF'
+CLASS_1_COLOR = '#4800FF' if THEME == 'light' else '#B699FF'
 CLASS_2_COLOR = '#BF333C'
 NEW_POINT_COLOR = '#00A058'
 ALPHA = 1
-NEIGHBOURS_COLOR = '#0A193B'
+NEIGHBOURS_COLOR = '#0A193B' if THEME == 'light' else '#A8BEF0'
 NEIGHBOURS_ALPHA = 0.5
 CLASS_1_MARKER = 'X'
 CLASS_2_MARKER = 'o'
@@ -25,10 +26,14 @@ MARKER_SIZE = 80
 NEIGHBOURS_RADIUS_SCALE = 1.1
 NEIGHBOURS_LINEWIDTH = 3
 SNS_STYLE = {
-    'grid.color': '#AAB3C8',
-    'axes.facecolor': '#DCDBEE',
+    'grid.color': '#AAB3C8' if THEME == 'light' else '#474072',
+    'axes.facecolor': '#DCDBEE' if THEME == 'light' else '#2C2847',
     'figure.facecolor' :'none',
+    'xtick.color': '#000000' if THEME == 'light' else '#FFFFFF',
+    'ytick.color': '#000000' if THEME == 'light' else '#FFFFFF',
 }
+LABEL_TEXT_COLOR = 'black' if THEME == 'light' else 'white'
+LEGEND_TEXT_COLOR = 'black' if THEME == 'light' else 'white'
 DPI = 100
 SEED = 69
 
@@ -61,8 +66,8 @@ def plot_knn(
     ax.set_ylim(YLIM)
     ax.set_xticks(XTICKS)
     ax.set_yticks(YTICKS)
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label, color=LABEL_TEXT_COLOR)
+    ax.set_ylabel(y_label, color=LABEL_TEXT_COLOR)
 
     ax.scatter(
         class_1[:, 0],
@@ -105,7 +110,7 @@ def plot_knn(
             )
         )
 
-    ax.legend()
+    ax.legend(labelcolor=LEGEND_TEXT_COLOR)
 
 
 if __name__ == '__main__':
@@ -143,7 +148,7 @@ if __name__ == '__main__':
         k=3,
         show_neighbours=False,
     )
-    plt.savefig(SCRIPT_PATH / 'knn.png', dpi=DPI)
+    plt.savefig(SCRIPT_PATH / f'knn_{THEME}.png', dpi=DPI)
 
     fig, ax = plt.subplots(1)
     plot_knn(
@@ -159,7 +164,7 @@ if __name__ == '__main__':
         k=3,
         show_neighbours=True,
     )
-    plt.savefig(SCRIPT_PATH / 'knn_neighbours.png', dpi=DPI)
+    plt.savefig(SCRIPT_PATH / f'knn_neighbours_{THEME}.png', dpi=DPI)
 
     class_1 = setosa[[x_col, y_col]].to_numpy(dtype=np.float64)
     class_2 = virginica[[x_col, y_col]].to_numpy(dtype=np.float64)
@@ -178,4 +183,4 @@ if __name__ == '__main__':
         k=8,
         show_neighbours=False,
     )
-    plt.savefig(SCRIPT_PATH / 'knn_all.png', dpi=DPI)
+    plt.savefig(SCRIPT_PATH / f'knn_all_{THEME}.png', dpi=DPI)

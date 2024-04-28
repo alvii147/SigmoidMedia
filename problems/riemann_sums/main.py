@@ -6,19 +6,23 @@ from pathlib import Path
 
 
 SCRIPT_PATH = Path(__file__).parent
+THEME = 'dark'
 XLIM = (0, 2)
 YLIM = (0, 16.5)
 YTICKS = np.arange(YLIM[0], YLIM[1] + 0.5, 4)
 RESOLUTION = 1000
-FUNCCOLOR = '#0A193B'
+FUNCCOLOR = '#0A193B' if THEME == 'light' else '#9B67CC'
 FACECOLOR = '#9290F8'
-EDGECOLOR = '#3D104B'
-SCATTERCOLOR = '#D5664F'
+EDGECOLOR = '#3D104B' if THEME == 'light' else '#FF4DC4'
+SCATTERCOLOR = '#FF5C33'
+SCATTEREDGECOLOR = '#4D0F00'
 LINEWIDTH = 3
 SNS_STYLE = {
-    'grid.color': '#AAB3C8',
-    'axes.facecolor': '#DCDBEE',
+    'grid.color': '#AAB3C8' if THEME == 'light' else '#474072',
+    'axes.facecolor': '#DCDBEE' if THEME == 'light' else '#2C2847',
     'figure.facecolor' :'none',
+    'xtick.color': '#000000' if THEME == 'light' else '#FFFFFF',
+    'ytick.color': '#000000' if THEME == 'light' else '#FFFFFF',
 }
 DPI = 100
 ALPHA = 0.8
@@ -65,6 +69,7 @@ def plot_function(ax, x, rectangle_mode, **kwargs):
             marker='X',
             s=75,
             color=kwargs.get('scattercolor', SCATTERCOLOR),
+            edgecolor=kwargs.get('scatteredgecolor', SCATTEREDGECOLOR),
             zorder=ZORDER+2,
         )
     elif rectangle_mode == 'right':
@@ -89,6 +94,7 @@ def plot_function(ax, x, rectangle_mode, **kwargs):
             marker='X',
             s=75,
             color=kwargs.get('scattercolor', SCATTERCOLOR),
+            edgecolor=kwargs.get('scatteredgecolor', SCATTEREDGECOLOR),
             zorder=ZORDER+2,
         )
     elif rectangle_mode == 'midpoint':
@@ -113,6 +119,7 @@ def plot_function(ax, x, rectangle_mode, **kwargs):
             marker='X',
             s=75,
             color=kwargs.get('scattercolor', SCATTERCOLOR),
+            edgecolor=kwargs.get('scatteredgecolor', SCATTEREDGECOLOR),
             zorder=ZORDER+2,
         )
 
@@ -155,4 +162,4 @@ if __name__ == '__main__':
     for name, cfg in config.items():
         fig, ax = plt.subplots()
         plot_function(ax, x, cfg['rectangle_mode'], **cfg['kwargs'])
-        plt.savefig(SCRIPT_PATH / f'{name}.png', dpi=DPI)
+        plt.savefig(SCRIPT_PATH / f'{name}_{THEME}.png', dpi=DPI)

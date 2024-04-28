@@ -7,8 +7,9 @@ from pathlib import Path
 
 
 SCRIPT_PATH = Path(__file__).parent
-NEUTRAL_COLOR = '#404040'
-COLORS = ['#73009A', '#0A193B', '#FF4DA6']
+THEME = 'dark'
+NEUTRAL_COLOR = '#404040' if THEME == 'light' else '#A6A6A6'
+COLORS = ['#73009A', '#0A193B', '#FF4DA6'] if THEME == 'light' else ['#73009A', '#517CE1', '#FF4DA6']
 CENTROID_COLOR = '#FF5C33'
 CENTROID_EDGE_COLOR = '#4D0F00'
 ALPHA = 0.8
@@ -18,10 +19,14 @@ CENTROID_MARKER = 'X'
 MARKER_SIZE = 80
 CENTROID_MARKER_SIZE = 130
 SNS_STYLE = {
-    'grid.color': '#AAB3C8',
-    'axes.facecolor': '#DCDBEE',
+    'grid.color': '#AAB3C8' if THEME == 'light' else '#474072',
+    'axes.facecolor': '#DCDBEE' if THEME == 'light' else '#2C2847',
     'figure.facecolor' :'none',
+    'xtick.color': '#000000' if THEME == 'light' else '#FFFFFF',
+    'ytick.color': '#000000' if THEME == 'light' else '#FFFFFF',
 }
+LABEL_TEXT_COLOR = 'black' if THEME == 'light' else 'white'
+LEGEND_TEXT_COLOR = 'black' if THEME == 'light' else 'white'
 DPI = 100
 
 
@@ -39,8 +44,8 @@ def plot_kmeans(
     centroids=None,
     legend=True,
 ):
-    ax.set_xlabel(x_label)
-    ax.set_ylabel(y_label)
+    ax.set_xlabel(x_label, color=LABEL_TEXT_COLOR)
+    ax.set_ylabel(y_label, color=LABEL_TEXT_COLOR)
 
     for i, label in enumerate(np.unique(labels)):
         idx = labels == label
@@ -80,7 +85,7 @@ def plot_kmeans(
         )
 
     if legend:
-        ax.legend()
+        ax.legend(labelcolor=LEGEND_TEXT_COLOR)
 
 
 if __name__ == '__main__':
@@ -106,7 +111,7 @@ if __name__ == '__main__':
         y_label=y_label,
         legend=False,
     )
-    plt.savefig(SCRIPT_PATH / 'raw_data.png', dpi=DPI)
+    plt.savefig(SCRIPT_PATH / f'raw_data_{THEME}.png', dpi=DPI)
 
     fig, ax = plt.subplots(1)
     plot_kmeans(
@@ -118,7 +123,7 @@ if __name__ == '__main__':
         y_label=y_label,
         centroids=model.cluster_centers_,
     )
-    plt.savefig(SCRIPT_PATH / 'kmeans_predicted_labels.png', dpi=DPI)
+    plt.savefig(SCRIPT_PATH / f'kmeans_predicted_labels_{THEME}.png', dpi=DPI)
 
     fig, ax = plt.subplots(1)
     plot_kmeans(
@@ -129,4 +134,4 @@ if __name__ == '__main__':
         x_label=x_label,
         y_label=y_label,
     )
-    plt.savefig(SCRIPT_PATH / 'actual_labels.png', dpi=DPI)
+    plt.savefig(SCRIPT_PATH / f'actual_labels_{THEME}.png', dpi=DPI)

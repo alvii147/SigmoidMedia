@@ -5,17 +5,21 @@ from pathlib import Path
 
 
 SCRIPT_PATH = Path(__file__).parent
+THEME = 'light'
 XLIM = (-5, 5)
 YLIM = (-0.5, 1.5)
 YTICKS = np.arange(YLIM[0], YLIM[1] + 0.5, 0.5)
 RESOLUTION = 1000
-COLOR = '#0A193B'
+COLOR = '#0A193B' if THEME == 'light' else '#9B67CC'
 LINEWIDTH = 3
 SNS_STYLE = {
-    'grid.color': '#AAB3C8',
-    'axes.facecolor': '#DCDBEE',
+    'grid.color': '#AAB3C8' if THEME == 'light' else '#474072',
+    'axes.facecolor': '#DCDBEE' if THEME == 'light' else '#2C2847',
     'figure.facecolor' :'none',
+    'xtick.color': '#000000' if THEME == 'light' else '#FFFFFF',
+    'ytick.color': '#000000' if THEME == 'light' else '#FFFFFF',
 }
+SPINE_COLOR = 'black' if THEME == 'light' else 'white'
 DPI = 100
 ALPHA = 0.8
 ZORDER = 100
@@ -58,8 +62,8 @@ def plot_function(ax, x, f, **kwargs):
     ax.spines['left'].set_position('zero')
     ax.spines['bottom'].set_position('zero')
 
-    ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_color('black')
+    ax.spines['left'].set_color(SPINE_COLOR)
+    ax.spines['bottom'].set_color(SPINE_COLOR)
     ax.spines['right'].set_color('none')
     ax.spines['top'].set_color('none')
 
@@ -103,4 +107,4 @@ if __name__ == '__main__':
         f = cfg['fn'](x)
         fig, ax = plt.subplots()
         plot_function(ax, x, f, **cfg['kwargs'])
-        plt.savefig(SCRIPT_PATH / f'{name}.png', dpi=DPI)
+        plt.savefig(SCRIPT_PATH / f'{name}_{THEME}.png', dpi=DPI)
